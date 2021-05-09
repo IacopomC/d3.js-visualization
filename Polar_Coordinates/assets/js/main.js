@@ -187,9 +187,7 @@ d3.text("./assets/data/avg_temp_year.csv")
 
 
         //Radial line, takes radians as argument
-        //http://stackoverflow.com/questions/18487780/how-to-make-a-radial-line-segment-using-d3-js
-        //http://stackoverflow.com/questions/14404345/polar-plots-using-d3-js
-        var line = d3.svg.line.radial()
+        var line = d3.lineRadial()
             .angle(function (d) { return radian(d.date); })
             .radius(function (d) { return distScale(d.mean_temp); });
 
