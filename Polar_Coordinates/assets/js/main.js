@@ -40,16 +40,10 @@ d3.text("./assets/data/avg_temp_year.csv")
     .then(function (text) {
 
         var years = [];
-        console.log(text[0]);
         var climateData = d3.csvParse(text, function (d) {
-            var temp = d[0].split('   ').slice(0, 2);
-            //console.log(temp[0].split('/'))
-            years.push(temp[0].split('/')[0]);
-            return { date: parseDate(temp[0].replace('/', '-') + '-1'), mean_temp: +temp[1] }  //'-') + '-01'
+            years.push(d.Year);
+            return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
         });
-        //var data = d3.csv.parseRows(text);
-        //console.log(climateData);
-
 
         //Set the minimum inner radius and max outer radius of the chart
         var outerRadius = Math.min(width, height, 500) / 2,
