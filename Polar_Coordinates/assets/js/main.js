@@ -290,11 +290,9 @@ d3.text("./assets/data/avg_temp_year.csv")
             .domain([domLow, domHigh]);
 
         //Define x-axis
-        var xAxis = d3.svg.axis()
-            .orient("bottom")
+        var xAxis = d3.axisBottom(xScale)
             .ticks(5)
-            .tickFormat(function (d) { return d + "°C"; })
-            .scale(xScale);
+            .tickFormat(function (d) { return d + "°C"; });
 
         //Set up X axis
         legendsvg.append("g")
