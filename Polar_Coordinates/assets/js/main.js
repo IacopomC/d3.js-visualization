@@ -50,26 +50,26 @@ d3.text("./assets/data/avg_temp_year.csv")
             innerRadius = outerRadius * 0.1;  //Sets the ratio.  Smaller magnifies differences. 0.1 good, 0.15
 
         //Base the color scale on average temperature extremes
-        var colorScale = d3.scale.linear()
+        var colorScale = d3.scaleLinear()
             .domain([domLow, (domLow + domHigh) / 2, domHigh])
             .range(["#2c7bb6", "#ffff8c", "#d7191c"])
             .interpolate(d3.interpolateHcl);
 
         //Scale for the heights of the bar, not starting at zero to give the bars an initial offset outward
-        var distScale = d3.scale.linear()
+        var distScale = d3.scaleLinear()
             .range([innerRadius, outerRadius])
             .domain([domLow, domHigh]);
 
         //Scale to turn the date into an angle of 360 degrees in total
         //With the first datapoint (Jan 1st) on top
-        // var angle = d3.scale.linear()
+        // var angle = d3.scaleLinear()
         //     .range([-180, 180])
         //     .domain(d3.extent(climateData, function(d) { return d.date; }));
 
         //Function to convert date into radians for path function
         //The radial scale in this case starts with 0 at 90 degrees
         //http://stackoverflow.com/questions/14404345/polar-plots-using-d3-js
-        var radian = d3.scale.linear()
+        var radian = d3.scaleLinear()
             .range([0, Math.PI * 2 * (climateData.length / 12)])
             .domain(d3.extent(climateData, function (d) { return d.date; }));
 
@@ -156,7 +156,7 @@ d3.text("./assets/data/avg_temp_year.csv")
 
 
         //Extra scale since the color scale is interpolated
-        // var radScale = d3.scale.linear()
+        // var radScale = d3.scaleLinear()
         //     .domain([domLow, domHigh])
         //     .range([innerRadius, outerRadius]);
 
@@ -232,7 +232,7 @@ d3.text("./assets/data/avg_temp_year.csv")
         ///////////////////////////////////////////////////////////////////////////
 
         //Extra scale since the color scale is interpolated
-        var tempScale = d3.scale.linear()
+        var tempScale = d3.scaleLinear()
             .domain([domLow, domHigh])
             .range([0, width]);
 
@@ -287,7 +287,7 @@ d3.text("./assets/data/avg_temp_year.csv")
             .text("Temperature Anomaly");
 
         //Set scale for x-axis
-        var xScale = d3.scale.linear()
+        var xScale = d3.scaleLinear()
             .range([-legendWidth / 2, legendWidth / 2])
             .domain([domLow, domHigh]);
 
