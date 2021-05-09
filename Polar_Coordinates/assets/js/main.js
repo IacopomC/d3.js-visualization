@@ -161,10 +161,10 @@ d3.text("./assets/data/avg_temp_year.csv")
         //     .range([innerRadius, outerRadius]);
 
         //Calculate the variables for the temp gradient
-        var numStops = 10;
-        tempRange = distScale.domain();
+        let numStops = 10;
+        let tempRange = distScale.domain();
         tempRange[2] = tempRange[1] - tempRange[0];
-        tempPoint = [];
+        let tempPoint = [];
         for (var i = 0; i < numStops; i++) {
             tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
         }
@@ -237,7 +237,7 @@ d3.text("./assets/data/avg_temp_year.csv")
             .range([0, width]);
 
         //Calculate the variables for the temp gradient
-        var numStops = 10;
+        numStops = 10;
         tempRange = tempScale.domain();
         tempRange[2] = tempRange[1] - tempRange[0];
         tempPoint = [];
