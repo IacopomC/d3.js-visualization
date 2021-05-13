@@ -35,7 +35,7 @@ var parseDate = d3.timeParse("%Y-%m");
 ///////////////////////////////////////////////////////////////////////////
 
 //Loads data, everything below is within callback: 
-d3.text("./assets/data/avg_temp_year.csv")
+d3.text("./assets/data/avg_temp_year_norm.csv")
 
     .then(function (text) {
 
@@ -44,6 +44,8 @@ d3.text("./assets/data/avg_temp_year.csv")
             years.push(d.Year);
             return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
         });
+
+        console.log(climateData);
 
         //Set the minimum inner radius and max outer radius of the chart
         var outerRadius = Math.min(width, height, 500) / 2,
@@ -220,7 +222,7 @@ d3.text("./assets/data/avg_temp_year.csv")
                     };
                 })
                 .duration(duration)
-                .ease("linear")
+                .ease(d3.easeLinear)
                 .attr("stroke-dashoffset", 0);
         });
 
