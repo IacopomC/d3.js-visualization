@@ -102,6 +102,11 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             .attr("y", -outerRadius + 30)
             .text("\u25B7")  //unicode triangle: U+25B2  \u25b2
 
+        
+        ///////////////////////////////////////////////////////////////////////////
+        //////////////////////////// Create Slider ////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////
+
 
 
         ///////////////////////////////////////////////////////////////////////////
@@ -223,82 +228,6 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
                 .ease(d3.easeLinear)
                 .attr("stroke-dashoffset", 0);
         });
-
-
-        ///////////////////////////////////////////////////////////////////////////
-        //////////////// Create the gradient for the legend ///////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-        //Extra scale since the color scale is interpolated
-        var tempScale = d3.scaleLinear()
-            .domain([domLow, domHigh])
-            .range([0, width]);
-
-        //Calculate the variables for the temp gradient
-        numStops = 10;
-        tempRange = tempScale.domain();
-        tempRange[2] = tempRange[1] - tempRange[0];
-        tempPoint = [];
-        for (var i = 0; i < numStops; i++) {
-            tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
-        }//for i
-
-        //Create the gradient
-        svg.append("defs")
-            .append("linearGradient")
-            .attr("id", "legend-weather")
-            .attr("x1", "0%").attr("y1", "0%")
-            .attr("x2", "100%").attr("y2", "0%")
-            .selectAll("stop")
-            .data(d3.range(numStops))
-            .enter().append("stop")
-            .attr("offset", function (d, i) { return tempScale(tempPoint[i]) / width; })
-            .attr("stop-color", function (d, i) { return colorScale(tempPoint[i]); });
-
-        ///////////////////////////////////////////////////////////////////////////
-        ////////////////////////// Draw the legend ////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-        var legendWidth = Math.min(outerRadius * 2, 400);
-
-        //Color Legend container
-        var legendsvg = svg.append("g")
-            .attr("class", "legendWrapper")
-            .attr("transform", "translate(" + 0 + "," + (outerRadius + 70) + ")");
-
-        //Draw the Rectangle
-        legendsvg.append("rect")
-            .attr("class", "legendRect")
-            .attr("x", -legendWidth / 2)
-            .attr("y", 0)
-            .attr("rx", 8 / 2)
-            .attr("width", legendWidth)
-            .attr("height", 8)
-            .style("fill", "url(#legend-weather)");
-
-        //Append title
-        legendsvg.append("text")
-            .attr("class", "legendTitle")
-            .attr("x", 0)
-            .attr("y", -10)
-            .style("text-anchor", "middle")
-            .text("Temperature Anomaly");
-
-        //Set scale for x-axis
-        var xScale = d3.scaleLinear()
-            .range([-legendWidth / 2, legendWidth / 2])
-            .domain([domLow, domHigh]);
-
-        //Define x-axis
-        var xAxis = d3.axisBottom(xScale)
-            .ticks(5)
-            .tickFormat(function (d) { return d + "°C"; });
-
-        //Set up X axis
-        legendsvg.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(0," + (10) + ")")
-            .call(xAxis);
     })
     .catch(function (error) {
         console.log('Error: ', error);
