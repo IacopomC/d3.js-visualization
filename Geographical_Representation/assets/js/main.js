@@ -19,7 +19,7 @@ let domLow = -1.5,  //-15, low end of data
 
 
 //SVG container
-let svg = d3.select("#weatherRadial")
+let svg = d3.select("#geoRepresentation")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -44,8 +44,6 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             years.push(d.Year);
             return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
         });
-
-        console.log(climateData);
 
         //Set the minimum inner radius and max outer radius of the chart
         var outerRadius = Math.min(width, height, 500) / 2,
@@ -88,14 +86,14 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             .attr("class", "title")
             .attr("x", 0)
             .attr("y", -outerRadius - 40)
-            .text("Global Temperature Anomaly");
+            .text("Year Temperature per Country");
 
         //Subtitle:
         textWrapper.append("text")
             .attr("class", "subtitle")
             .attr("x", 0)
             .attr("y", -outerRadius - 20)
-            .text('January 1850 - August 2016');
+            .text('January 1901 - December 2020');
 
         //Append play button
         var play = textWrapper.append("text")
