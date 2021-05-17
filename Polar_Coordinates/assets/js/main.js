@@ -95,7 +95,7 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             .attr("class", "subtitle")
             .attr("x", 0)
             .attr("y", -outerRadius - 20)
-            .text('January 1850 - August 2016');
+            .text('January 1901 - December 2020');
 
         //Append play button
         var play = textWrapper.append("text")
