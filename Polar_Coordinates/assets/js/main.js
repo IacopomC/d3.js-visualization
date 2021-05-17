@@ -150,7 +150,7 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             .attr("x", -22)
             .attr("y", 0)
             //.attr("dy", "0.9em")
-            .text("1850");
+            .text("1901");
 
         ///////////////////////////////////////////////////////////////////////////
         //////////////// Create radial gradient for the line //////////////////////
