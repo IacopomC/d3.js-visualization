@@ -13,9 +13,9 @@ function setMap() {
     width = 960, height = 580;  // map width and height, matches 
 
     projection = d3.geoMercator()   // define our projection with parameters
-        .scale(170)
+        .scale(130)
         .translate([width / 2, height / 2])
-        .precision(.1);
+        .center([0, 5 ]);
 
     path = d3.geoPath()  // create path generator function
         .projection(projection);  // add our define projection to it
@@ -60,7 +60,6 @@ function loadData() {
 function processData(world, countryData) {
     // function accepts any errors from the queue function as first argument, then
     // each data object in the order of chained defer() methods above
-    console.log(world);
     var countries = world[1].objects.countries.geometries;  // store the path in variable for ease
     for (var i in countries) {    // for each geometry object
         for (var j in countryData) {  // for each row in the CSV
