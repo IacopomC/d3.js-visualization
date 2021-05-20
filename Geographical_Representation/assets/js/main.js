@@ -143,6 +143,12 @@ function animateMap() {
         .step(1)
         .width(100)
         .displayValue(false)
+        .handle(
+            d3
+                .symbol()
+                .type(d3.symbolCircle)
+                .size(200)()
+        )
         .on('onchange', function (year) {  // when user clicks the play button
             if (currentAttribute < attributeArray.length - 1) {
                 currentAttribute = year - 2008;
