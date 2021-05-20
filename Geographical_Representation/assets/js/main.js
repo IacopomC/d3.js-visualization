@@ -12,8 +12,7 @@ function setMap() {
 
     width = 960, height = 580;  // map width and height, matches 
 
-    projection = d3.geoMercator()   // define our projection with parameters
-        .scale(130)
+    projection = d3.geoEqualEarth()   // define our projection with parameters
         .translate([width / 2, height / 2])
         .center([0, 5 ]);
 
