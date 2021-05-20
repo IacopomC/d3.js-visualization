@@ -1,106 +1,49 @@
-body {
-    font-size: 10px;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    fill: #8C8C8C;
-    text-align: center;
-    background: #191919; /*#fcfcfa; #a9a9a9  #090909*/
+#wrapper {
+    width: 960px;
+    margin: -30px auto 0;
+}
+#map {
+    width: 960px;
+    height: 580px;
+    position: relative;
+}
+.stroke {
+  fill: none;
+  stroke: #888;
+  stroke-width: 2px;
 }
 
-.title {
-    font-size: 26px;  /*28px*/
-    fill: #C4C4C4; /*#4F4F4F;*/
-    font-weight: 300;
-    text-anchor: start;
+.fill {
+  fill: #fff;
 }
 
-.subtitle {
-    font-size: 14px;
-    fill: #AAAAAA;
-    font-weight: 300;
-    text-anchor: start;
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
 }
 
-.credit {
-    font-size: 12px;
-    fill: #AAAAAA;
-    font-weight: 300;
-    text-anchor: start;
+.land {
+  fill: #222;
 }
 
-.axis path,
-.axis tick,
-.axis line {
-    fill: none;
-    stroke: none;
-    /*shape-rendering: crispEdges;*/
-    shape-rendering: geometricPrecision;
-    /*shape-rendering: auto;*/
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
 }
-
-.axis text {
-    font-size: 12px;
-    fill: #AAAAAA;
-    font-weight: 400;
+.country {
+    fill: steelblue;
+    stroke: white;
 }
-
-.legendTitle {
-    font-size: 14px;
-    fill: #AAAAAA;  /*#4F4F4F;*/
-    font-weight: 300;
+#play, #clock {
+    position: absolute;
+    top: 15px;
 }
-
-.january {
-    font-size: 14px;
-    text-anchor: start;
-    font-weight: 300;
-    fill: #AAAAAA;
+#play {
+    left: 15px;
 }
-
-.yearText {
-    font-size: 18px;
-    text-anchor: start;
-    font-weight: 300;
-    fill: #AAAAAA;
-}
-
-.yearLine {
-    stroke: #AAAAAA;
-}
-
-.axisText {
-    fill: #C4C4C4;
-    font-size: 11px;
-    font-weight: 300;
-    text-anchor: middle;
-}
-
-.axisCircles {
-    fill: none;
-    stroke: #E8E8E8;
-    stroke-width: 1.25px;  /* 1px */
-    /*shape-rendering: geometricPrecision;*/
-    /*shape-rendering: crispEdges;*/
-    shape-rendering: auto;
-}
-.line {
-    fill: none;
-    /*stroke: red;*/  /*lightgreen;*/
-    stroke-width: 2.3px;  /*1.5px; 1.25px 2.5px 2.75*/
-    /*shape-rendering: crispEdges;*/
-    shape-rendering: geometricPrecision;
-}
-.path {
-    /*stroke: steelblue;*/
-    fill: none;
-    stroke-width: 3px;
-}
-
-.play {
-    font: 500 35px sans-serif;  /* 40px */
-    fill: #e5e5e5; 
-    cursor: pointer;
-}
-.play:hover {
-    fill: #ccc;
+#clock {
+    left: 65px;
 }
