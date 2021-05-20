@@ -1,234 +1,161 @@
+//globals
+var width, height, projection, path, graticule, svg, attributeArray = [], currentAttribute = 0, playing = false;
 
-///////////////////////////////////////////////////////////////////////////
-//////////////////// Set up and initiate svg containers ///////////////////
-/////////////////////////////////////////////////////////////////////////// 
+function init() {
 
-let margin = {
-    top: 70,
-    right: 20,
-    bottom: 120,
-    left: 20
-};
-let width = window.innerWidth - margin.left - margin.right - 20;
-let height = window.innerHeight - margin.top - margin.bottom - 20;
+    setMap();
+    animateMap();
 
-let domLow = -1.5,  //-15, low end of data
-    domHigh = 1.25,  //30, high end of data
-    axisTicks = [-1, 0, 1],   //[-20,-10,0,10,20,30];  [-2,-1,0,1,2,3];  [-1.5,-0.5,0.5,1.5];
-    duration = 25000; //100000, 50000
+}
 
+function setMap() {
 
-//SVG container
-let svg = d3.select("#geoRepresentation")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + (margin.left + width / 2) + "," + (margin.top + height / 2) + ")");
+    width = 960, height = 580;  // map width and height, matches 
 
-//Parses a string into a date
-var parseDate = d3.timeParse("%Y-%m");
+    projection = d3.geo.eckert5()   // define our projection with parameters
+        .scale(170)
+        .translate([width / 2, height / 2])
+        .precision(.1);
 
+    path = d3.geo.path()  // create path generator function
+        .projection(projection);  // add our define projection to it
 
-///////////////////////////////////////////////////////////////////////////
-//////////////////////////// Create scales ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
+    graticule = d3.geo.graticule(); // create a graticule
 
-//Loads data, everything below is within callback: 
-d3.text("./assets/data/avg_temp_year_norm.csv")
+    svg = d3.select("#map").append("svg")   // append a svg to our html div to hold our map
+        .attr("width", width)
+        .attr("height", height);
 
-    .then(function (text) {
+    svg.append("defs").append("path")   // prepare some svg for outer container of svg elements
+        .datum({ type: "Sphere" })
+        .attr("id", "sphere")
+        .attr("d", path);
 
-        var years = [];
-        var climateData = d3.csvParse(text, function (d) {
-            years.push(d.Year);
-            return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
-        });
+    svg.append("use")   // use that svg to style with css
+        .attr("class", "stroke")
+        .attr("xlink:href", "#sphere");
 
-        //Set the minimum inner radius and max outer radius of the chart
-        var outerRadius = Math.min(width, height, 500) / 2,
-            innerRadius = outerRadius * 0.1;  //Sets the ratio.  Smaller magnifies differences. 0.1 good, 0.15
+    svg.append("path")    // use path generator to draw a graticule
+        .datum(graticule)
+        .attr("class", "graticule")
+        .attr("d", path);
 
-        //Base the color scale on average temperature extremes
-        var colorScale = d3.scaleLinear()
-            .domain([domLow, (domLow + domHigh) / 2, domHigh])
-            .range(["#2c7bb6", "#ffff8c", "#d7191c"])
-            .interpolate(d3.interpolateHcl);
+    loadData();  // let's load our data next
 
-        //Scale for the heights of the bar, not starting at zero to give the bars an initial offset outward
-        var distScale = d3.scaleLinear()
-            .range([innerRadius, outerRadius])
-            .domain([domLow, domHigh]);
+}
 
-        //Scale to turn the date into an angle of 360 degrees in total
-        //With the first datapoint (Jan 1st) on top
-        // var angle = d3.scaleLinear()
-        //     .range([-180, 180])
-        //     .domain(d3.extent(climateData, function(d) { return d.date; }));
+function loadData() {
 
-        //Function to convert date into radians for path function
-        //The radial scale in this case starts with 0 at 90 degrees
-        //http://stackoverflow.com/questions/14404345/polar-plots-using-d3-js
-        var radian = d3.scaleLinear()
-            .range([0, Math.PI * 2 * (climateData.length / 12)])
-            .domain(d3.extent(climateData, function (d) { return d.date; }));
+    queue()   // queue function loads all external data files asynchronously 
+        .defer(d3.json, "./assets/data/world-topo.json")  // our geometries
+        .defer(d3.csv, "./assets/data/countriesRandom.csv")  // and associated data in csv file
+        .await(processData);   // once all files are loaded, call the processData function passing
+    // the loaded objects as arguments
+}
 
+function processData(error, world, countryData) {
+    // function accepts any errors from the queue function as first argument, then
+    // each data object in the order of chained defer() methods above
 
-        ///////////////////////////////////////////////////////////////////////////
-        //////////////////////////// Create Titles ////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-        var textWrapper = svg.append("g").attr("class", "textWrapper")
-            .attr("transform", "translate(" + Math.max(-width / 2, -outerRadius - 170) + "," + 0 + ")");
-
-        //Append title to the top
-        textWrapper.append("text")
-            .attr("class", "title")
-            .attr("x", 0)
-            .attr("y", -outerRadius - 40)
-            .text("Year Temperature per Country");
-
-        //Subtitle:
-        textWrapper.append("text")
-            .attr("class", "subtitle")
-            .attr("x", 0)
-            .attr("y", -outerRadius - 20)
-            .text('January 1901 - December 2020');
-
-        //Append play button
-        var play = textWrapper.append("text")
-            .attr("class", "play")
-            .attr("x", 0)
-            .attr("y", -outerRadius + 30)
-            .text("\u25B7")  //unicode triangle: U+25B2  \u25b2
-
-        
-        ///////////////////////////////////////////////////////////////////////////
-        //////////////////////////// Create Slider ////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-
-
-        ///////////////////////////////////////////////////////////////////////////
-        ///////////////////////////// Create Axes /////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-        //Wrapper for the bars and to position it downward
-        var barWrapper = svg.append("g")
-            .attr("transform", "translate(" + 0 + "," + 0 + ")");
-
-        //Draw gridlines below the bars
-        var axes = barWrapper.selectAll(".gridCircles")
-            .data(axisTicks)
-            .enter().append("g");
-        //Draw the circles
-        axes.append("circle")
-            .attr("class", "axisCircles")
-            .attr("r", function (d) { return distScale(d); });
-        //Draw the axis labels
-        axes.append("text")
-            .attr("class", "axisText")
-            .attr("y", function (d) { return distScale(d) - 8; })
-            .attr("dy", "0.3em")
-            .text(function (d) { return d + "°C" });
-
-        //Add January for reference
-        barWrapper.append("text")
-            .attr("class", "january")
-            .attr("x", 7)
-            .attr("y", -outerRadius * 1.1)
-            .attr("dy", "0.9em")
-            .text("January");
-        //Add a line to split the year
-        barWrapper.append("line")
-            .attr("class", "yearLine")
-            .attr("x1", 0)
-            .attr("y1", -innerRadius * 1.8)  //.65
-            .attr("x2", 0)
-            .attr("y2", -outerRadius * 1.1);
-
-        //Add year in center
-        barWrapper.append("text")
-            .attr("class", "yearText")
-            .attr("x", -22)
-            .attr("y", 0)
-            //.attr("dy", "0.9em")
-            .text("1850");
-
-        ///////////////////////////////////////////////////////////////////////////
-        //////////////// Create radial gradient for the line //////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-
-        //Extra scale since the color scale is interpolated
-        // var radScale = d3.scaleLinear()
-        //     .domain([domLow, domHigh])
-        //     .range([innerRadius, outerRadius]);
-
-        //Calculate the variables for the temp gradient
-        let numStops = 10;
-        let tempRange = distScale.domain();
-        tempRange[2] = tempRange[1] - tempRange[0];
-        let tempPoint = [];
-        for (var i = 0; i < numStops; i++) {
-            tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
-        }
-
-        //Create the radial gradient
-        var radialGradient = svg.append("defs")
-            .append("radialGradient")
-            .attr("id", "radial-gradient")
-            .selectAll("stop")
-            .data(d3.range(numStops))
-            .enter().append("stop")
-            .attr("offset", function (d, i) { return distScale(tempPoint[i]) / outerRadius; })
-            .attr("stop-color", function (d, i) { return colorScale(tempPoint[i]); });
-
-
-
-        ///////////////////////////////////////////////////////////////////////////
-        ////////////////////////////// Draw lines /////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////
-
-
-        //Radial line, takes radians as argument
-        var line = d3.lineRadial()
-            .angle(function (d) { return radian(d.date); })
-            .radius(function (d) { return distScale(d.mean_temp); });
-
-        //Append path drawing function to play button
-        play.on("click", function () {
-
-            if (d3.select("path.line")) {
-                d3.select("path.line").remove();
+    var countries = world.objects.countries.geometries;  // store the path in variable for ease
+    for (var i in countries) {    // for each geometry object
+        for (var j in countryData) {  // for each row in the CSV
+            if (countries[i].properties.id == countryData[j].id) {   // if they match
+                for (var k in countryData[i]) {   // for each column in the a row within the CSV
+                    if (k != 'name' && k != 'id') {  // let's not add the name or id as props since we already have them
+                        if (attributeArray.indexOf(k) == -1) {
+                            attributeArray.push(k);  // add new column headings to our array for later
+                        }
+                        countries[i].properties[k] = Number(countryData[j][k])  // add each CSV column key/value to geometry object
+                    }
+                }
+                break;  // stop looking through the CSV since we made our match
             }
+        }
+    }
+    d3.select('#clock').html(attributeArray[currentAttribute]);  // populate the clock initially with the current year
+    drawMap(world);  // let's mug the map now with our newly populated data object
+}
 
-            //Create path using line function
-            var path = barWrapper.append("path")
-                .attr("d", line(climateData))
-                .attr("class", "line")
-                .attr("x", -0.75)
-                .style("stroke", "url(#radial-gradient)")
-            //.datum(climateData);  attaches all data
+function drawMap(world) {
 
-            var totalLength = path.node().getTotalLength();
+    svg.selectAll(".country")   // select country objects (which don't exist yet)
+        .data(topojson.feature(world, world.objects.countries).features)  // bind data to these non-existent objects
+        .enter().append("path") // prepare data to be appended to paths
+        .attr("class", "country") // give them a class for styling and access later
+        .attr("id", function (d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
+        .attr("d", path); // create them using the svg path generator defined above
 
-            path.attr("stroke-dasharray", totalLength + " " + totalLength)
-                .attr("stroke-dashoffset", totalLength)
-                .transition()
-                //Works, but kind of a hack:
-                .tween("customTween", function () {
-                    return function (t) {
-                        d3.select("text.yearText").text(years[Math.floor(t * years.length - 1)])
-                            .transition()
-                            .duration(t / 1.5);
-                    };
-                })
-                .duration(duration)
-                .ease(d3.easeLinear)
-                .attr("stroke-dashoffset", 0);
+    var dataRange = getDataRange(); // get the min/max values from the current year's range of data values
+    d3.selectAll('.country')  // select all the countries
+        .attr('fill-opacity', function (d) {
+            return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // give them an opacity value based on their current value
         });
-    })
-    .catch(function (error) {
-        console.log('Error: ', error);
-    });
+}
+
+function sequenceMap() {
+
+    var dataRange = getDataRange(); // get the min/max values from the current year's range of data values
+    d3.selectAll('.country').transition()  //select all the countries and prepare for a transition to new values
+        .duration(750)  // give it a smooth time period for the transition
+        .attr('fill-opacity', function (d) {
+            return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // the end color value
+        })
+
+}
+
+function getColor(valueIn, valuesIn) {
+
+    var color = d3.scale.linear() // create a linear scale
+        .domain([valuesIn[0], valuesIn[1]])  // input uses min and max values
+        .range([.3, 1]);   // output for opacity between .3 and 1 %
+
+    return color(valueIn);  // return that number to the caller
+}
+
+function getDataRange() {
+    // function loops through all the data values from the current data attribute
+    // and returns the min and max values
+
+    var min = Infinity, max = -Infinity;
+    d3.selectAll('.country')
+        .each(function (d, i) {
+            var currentValue = d.properties[attributeArray[currentAttribute]];
+            if (currentValue <= min && currentValue != -99 && currentValue != 'undefined') {
+                min = currentValue;
+            }
+            if (currentValue >= max && currentValue != -99 && currentValue != 'undefined') {
+                max = currentValue;
+            }
+        });
+    return [min, max];  //boomsauce
+}
+
+function animateMap() {
+
+    var timer;  // create timer object
+    d3.select('#play')
+        .on('click', function () {  // when user clicks the play button
+            if (playing == false) {  // if the map is currently playing
+                timer = setInterval(function () {   // set a JS interval
+                    if (currentAttribute < attributeArray.length - 1) {
+                        currentAttribute += 1;  // increment the current attribute counter
+                    } else {
+                        currentAttribute = 0;  // or reset it to zero
+                    }
+                    sequenceMap();  // update the representation of the map 
+                    d3.select('#clock').html(attributeArray[currentAttribute]);  // update the clock
+                }, 2000);
+
+                d3.select(this).html('stop');  // change the button label to stop
+                playing = true;   // change the status of the animation
+            } else {    // else if is currently playing
+                clearInterval(timer);   // stop the animation by clearing the interval
+                d3.select(this).html('play');   // change the button label to play
+                playing = false;   // change the status again
+            }
+        });
+}
+
+
+window.onload = init();  // magic starts here
