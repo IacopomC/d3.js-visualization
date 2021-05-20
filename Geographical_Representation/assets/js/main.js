@@ -1,5 +1,5 @@
 //globals
-var width, height, projection, path, graticule, svg, attributeArray = [], currentAttribute = 0, playing = false;
+var width, height, projection, path, graticule, svg, attributeArray = [], currentAttribute = 0;
 
 function init() {
 
@@ -14,7 +14,7 @@ function setMap() {
 
     projection = d3.geoEqualEarth()   // define our projection with parameters
         .translate([width / 2, height / 2])
-        .center([0, 5 ]);
+        .center([0, 5]);
 
     path = d3.geoPath()  // create path generator function
         .projection(projection);  // add our define projection to it
@@ -47,8 +47,8 @@ function loadData() {
 
     // Datasets to load
     let dataPromises = [
-    d3.csv("./assets/data/countriesRandom.csv"), // and associated data in csv file
-    d3.json("./assets/data/world-topo.json") // our geometries
+        d3.csv("./assets/data/countriesRandom.csv"), // and associated data in csv file
+        d3.json("./assets/data/world-topo.json") // our geometries
     ]
 
     // Promise loads all external data files asynchronously
@@ -136,28 +136,30 @@ function getDataRange() {
 
 function animateMap() {
 
-    var timer;  // create timer object
-    d3.select('#play')
-        .on('click', function () {  // when user clicks the play button
-            if (playing == false) {  // if the map is currently playing
-                timer = setInterval(function () {   // set a JS interval
-                    if (currentAttribute < attributeArray.length - 1) {
-                        currentAttribute += 1;  // increment the current attribute counter
-                    } else {
-                        currentAttribute = 0;  // or reset it to zero
-                    }
-                    sequenceMap();  // update the representation of the map 
-                    d3.select('#clock').html(attributeArray[currentAttribute]);  // update the clock
-                }, 2000);
-
-                d3.select(this).html('stop');  // change the button label to stop
-                playing = true;   // change the status of the animation
-            } else {    // else if stopped
-                clearInterval(timer);   // stop the animation by clearing the interval
-                d3.select(this).html('play');   // change the button label to play
-                playing = false;   // change the status again
+    var slider = d3
+        .sliderHorizontal()
+        .min(2008)
+        .max(2013)
+        .step(1)
+        .width(100)
+        .displayValue(false)
+        .on('onchange', function (year) {  // when user clicks the play button
+            if (currentAttribute < attributeArray.length - 1) {
+                currentAttribute = year - 2008;
+            } else {
+                currentAttribute = 0;  // or reset it to zero
             }
+            sequenceMap();  // update the representation of the map 
+            d3.select('#clock').html(year);  // update the clock
         });
+
+    d3.select('#slider')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)')
+        .call(slider);
 }
 
 
