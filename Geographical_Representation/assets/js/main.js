@@ -56,10 +56,11 @@ function loadData() {
     // the loaded objects as arguments
 }
 
-function processData(world, countryData) {
+function processData(data) {
     // function accepts any errors from the queue function as first argument, then
     // each data object in the order of chained defer() methods above
-    var countries = world[1].objects.countries.geometries;  // store the path in variable for ease
+    var countries = data[1].objects.countries.geometries;  // store the path in variable for ease
+    let countryData = data[0];
     for (var i in countries) {    // for each geometry object
         for (var j in countryData) {  // for each row in the CSV
             if (countries[i].properties.id == countryData[j].id) {   // if they match
@@ -76,7 +77,7 @@ function processData(world, countryData) {
         }
     }
     d3.select('#clock').html(attributeArray[currentAttribute]);  // populate the clock initially with the current year
-    drawMap(world);  // let's mug the map now with our newly populated data object
+    drawMap(data);  // let's mug the map now with our newly populated data object
 }
 
 function drawMap(world) {
@@ -151,7 +152,7 @@ function animateMap() {
 
                 d3.select(this).html('stop');  // change the button label to stop
                 playing = true;   // change the status of the animation
-            } else {    // else if is currently playing
+            } else {    // else if stopped
                 clearInterval(timer);   // stop the animation by clearing the interval
                 d3.select(this).html('play');   // change the button label to play
                 playing = false;   // change the status again
