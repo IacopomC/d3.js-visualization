@@ -142,6 +142,7 @@ function animateMap() {
         .max(2013)
         .step(1)
         .width(100)
+        .ticks(0)
         .displayValue(false)
         .handle(
             d3
