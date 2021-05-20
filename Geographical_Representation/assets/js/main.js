@@ -12,15 +12,15 @@ function setMap() {
 
     width = 960, height = 580;  // map width and height, matches 
 
-    projection = d3.geo.eckert5()   // define our projection with parameters
+    projection = d3.geoMercator()   // define our projection with parameters
         .scale(170)
         .translate([width / 2, height / 2])
         .precision(.1);
 
-    path = d3.geo.path()  // create path generator function
+    path = d3.geoPath()  // create path generator function
         .projection(projection);  // add our define projection to it
 
-    graticule = d3.geo.graticule(); // create a graticule
+    graticule = d3.geoGraticule(); // create a graticule
 
     svg = d3.select("#map").append("svg")   // append a svg to our html div to hold our map
         .attr("width", width)
@@ -46,18 +46,22 @@ function setMap() {
 
 function loadData() {
 
-    queue()   // queue function loads all external data files asynchronously 
-        .defer(d3.json, "./assets/data/world-topo.json")  // our geometries
-        .defer(d3.csv, "./assets/data/countriesRandom.csv")  // and associated data in csv file
-        .await(processData);   // once all files are loaded, call the processData function passing
+    // Datasets to load
+    let dataPromises = [
+    d3.csv("./assets/data/countriesRandom.csv"), // and associated data in csv file
+    d3.json("./assets/data/world-topo.json") // our geometries
+    ]
+
+    // Promise loads all external data files asynchronously
+    Promise.all(dataPromises).then(processData);// once all files are loaded, call the processData function passing
     // the loaded objects as arguments
 }
 
-function processData(error, world, countryData) {
+function processData(world, countryData) {
     // function accepts any errors from the queue function as first argument, then
     // each data object in the order of chained defer() methods above
-
-    var countries = world.objects.countries.geometries;  // store the path in variable for ease
+    console.log(world);
+    var countries = world[1].objects.countries.geometries;  // store the path in variable for ease
     for (var i in countries) {    // for each geometry object
         for (var j in countryData) {  // for each row in the CSV
             if (countries[i].properties.id == countryData[j].id) {   // if they match
@@ -80,7 +84,7 @@ function processData(error, world, countryData) {
 function drawMap(world) {
 
     svg.selectAll(".country")   // select country objects (which don't exist yet)
-        .data(topojson.feature(world, world.objects.countries).features)  // bind data to these non-existent objects
+        .data(topojson.feature(world[1], world[1].objects.countries).features)  // bind data to these non-existent objects
         .enter().append("path") // prepare data to be appended to paths
         .attr("class", "country") // give them a class for styling and access later
         .attr("id", function (d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
@@ -106,7 +110,7 @@ function sequenceMap() {
 
 function getColor(valueIn, valuesIn) {
 
-    var color = d3.scale.linear() // create a linear scale
+    var color = d3.scaleLinear() // create a linear scale
         .domain([valuesIn[0], valuesIn[1]])  // input uses min and max values
         .range([.3, 1]);   // output for opacity between .3 and 1 %
 
