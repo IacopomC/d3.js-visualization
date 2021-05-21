@@ -47,7 +47,7 @@ function loadData() {
 
     // Datasets to load
     let dataPromises = [
-        d3.csv("./assets/data/countriesRandom.csv"), // and associated data in csv file
+        d3.csv("./assets/data/minmax_avg_by_year.csv"), // and associated data in csv file
         d3.json("./assets/data/world-topo.json") // our geometries
     ]
 
@@ -112,7 +112,6 @@ function getColor(valueIn, valuesIn) {
     var color = d3.scaleLinear() // create a linear scale
         .domain([valuesIn[0], valuesIn[1]])  // input uses min and max values
         .range([.3, 1]);   // output for opacity between .3 and 1 %
-
     return color(valueIn);  // return that number to the caller
 }
 
@@ -138,8 +137,8 @@ function animateMap() {
 
     var slider = d3
         .sliderHorizontal()
-        .min(2008)
-        .max(2013)
+        .min(1901)
+        .max(2020)
         .step(1)
         .ticks(0)
         .displayValue(false)
@@ -151,7 +150,7 @@ function animateMap() {
         )
         .on('onchange', function (year) {  // when user clicks the play button
             if (currentAttribute < attributeArray.length - 1) {
-                currentAttribute = year - 2008;
+                currentAttribute = year - attributeArray[0];
             } else {
                 currentAttribute = 0;  // or reset it to zero
             }
