@@ -37,13 +37,10 @@
     fill: steelblue;
     stroke: white;
 }
-#play, #clock {
-    position: absolute;
-    top: 15px;
-}
-#play {
-    left: 15px;
+#slider, #clock {
+  position: absolute;
 }
 #clock {
-    left: 165px;
+  left: 30px;
+  bottom: 28px;
 }

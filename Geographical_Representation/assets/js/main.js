@@ -141,7 +141,6 @@ function animateMap() {
         .min(2008)
         .max(2013)
         .step(1)
-        .width(100)
         .ticks(0)
         .displayValue(false)
         .handle(
@@ -162,8 +161,6 @@ function animateMap() {
 
     d3.select('#slider')
         .append('svg')
-        .attr('width', 500)
-        .attr('height', 100)
         .append('g')
         .attr('transform', 'translate(30,30)')
         .call(slider);
