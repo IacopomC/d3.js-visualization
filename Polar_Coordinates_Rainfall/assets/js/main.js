@@ -12,9 +12,9 @@ let margin = {
 let width = window.innerWidth - margin.left - margin.right - 20;
 let height = window.innerHeight - margin.top - margin.bottom - 20;
 
-let domLow = -25,  //-15, low end of data
-    domHigh = 25,  //30, high end of data
-    axisTicks = [-15, 0, 15, 25],   //[-20,-10,0,10,20,30];  [-2,-1,0,1,2,3];  [-1.5,-0.5,0.5,1.5];
+let domLow = 0,  //-15, low end of data
+    domHigh = 105,  //30, high end of data
+    axisTicks = [25, 50, 75, 105],   //[-20,-10,0,10,20,30];  [-2,-1,0,1,2,3];  [-1.5,-0.5,0.5,1.5];
     duration = 25000; //100000, 50000
 
 
@@ -35,14 +35,13 @@ var parseDate = d3.timeParse("%Y-%m");
 ///////////////////////////////////////////////////////////////////////////
 
 //Loads data, everything below is within callback: 
-d3.text("./assets/data/avg_temp_year.csv")
+d3.text("./assets/data/rainfall_avg_by_year.csv")
 
     .then(function (text) {
-
         var years = [];
         var climateData = d3.csvParse(text, function (d) {
             years.push(d.Year);
-            return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
+            return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Rainfall }
         });
 
         //Set the minimum inner radius and max outer radius of the chart
@@ -117,7 +116,7 @@ d3.text("./assets/data/avg_temp_year.csv")
             .attr("class", "axisText")
             .attr("y", function (d) { return distScale(d) - 8; })
             .attr("dy", "0.3em")
-            .text(function (d) { return d + "°C" });
+            .text(function (d) { return d + " mm" });
 
         //Add January for reference
         barWrapper.append("text")
@@ -284,7 +283,7 @@ d3.text("./assets/data/avg_temp_year.csv")
         //Define x-axis
         var xAxis = d3.axisBottom(xScale)
             .ticks(5)
-            .tickFormat(function (d) { return d + "°C"; });
+            .tickFormat(function (d) { return d + " mm"; });
 
         //Set up X axis
         legendsvg.append("g")
