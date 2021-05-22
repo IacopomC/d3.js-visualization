@@ -51,7 +51,7 @@ function createTitle() {
     //Append title to the top
     textWrapper.append("text")
         .attr("class", "title")
-        .attr("x", 720)
+        .attr("x", 690)
         .attr("y", 50)
         .text("Temperature Evolution by Country 1901 - 2020");
 
