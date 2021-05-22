@@ -12,9 +12,9 @@ let margin = {
 let width = window.innerWidth - margin.left - margin.right - 20;
 let height = window.innerHeight - margin.top - margin.bottom - 20;
 
-let domLow = -1.5,  //-15, low end of data
-    domHigh = 1.25,  //30, high end of data
-    axisTicks = [-1, 0, 1],   //[-20,-10,0,10,20,30];  [-2,-1,0,1,2,3];  [-1.5,-0.5,0.5,1.5];
+let domLow = -25,  //-15, low end of data
+    domHigh = 25,  //30, high end of data
+    axisTicks = [-15, 0, 15, 25],   //[-20,-10,0,10,20,30];  [-2,-1,0,1,2,3];  [-1.5,-0.5,0.5,1.5];
     duration = 25000; //100000, 50000
 
 
@@ -35,7 +35,7 @@ var parseDate = d3.timeParse("%Y-%m");
 ///////////////////////////////////////////////////////////////////////////
 
 //Loads data, everything below is within callback: 
-d3.text("./assets/data/avg_temp_year_norm.csv")
+d3.text("./assets/data/avg_temp_year.csv")
 
     .then(function (text) {
 
@@ -44,8 +44,6 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             years.push(d.Year);
             return { date: parseDate(d.Year + '-' + d.Month), mean_temp: d.Temperature }
         });
-
-        console.log(climateData);
 
         //Set the minimum inner radius and max outer radius of the chart
         var outerRadius = Math.min(width, height, 500) / 2,
@@ -61,12 +59,6 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
         var distScale = d3.scaleLinear()
             .range([innerRadius, outerRadius])
             .domain([domLow, domHigh]);
-
-        //Scale to turn the date into an angle of 360 degrees in total
-        //With the first datapoint (Jan 1st) on top
-        // var angle = d3.scaleLinear()
-        //     .range([-180, 180])
-        //     .domain(d3.extent(climateData, function(d) { return d.date; }));
 
         //Function to convert date into radians for path function
         //The radial scale in this case starts with 0 at 90 degrees
@@ -103,8 +95,6 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
             .attr("x", 0)
             .attr("y", -outerRadius + 30)
             .text("\u25B7")  //unicode triangle: U+25B2  \u25b2
-
-
 
         ///////////////////////////////////////////////////////////////////////////
         ///////////////////////////// Create Axes /////////////////////////////////
@@ -243,7 +233,7 @@ d3.text("./assets/data/avg_temp_year_norm.csv")
         tempPoint = [];
         for (var i = 0; i < numStops; i++) {
             tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
-        }//for i
+        }
 
         //Create the gradient
         svg.append("defs")
