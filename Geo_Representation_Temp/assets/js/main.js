@@ -53,7 +53,14 @@ function createTitle() {
         .attr("class", "title")
         .attr("x", 720)
         .attr("y", 50)
-        .text("Global Temperature Evolution 1901 - 2020");
+        .text("Temperature Evolution by Country 1901 - 2020");
+
+    //Subtitle:
+    textWrapper.append("text")
+    .attr("class", "subtitle")
+    .attr("x", 800)
+    .attr("y", 70)
+    .text('Each year represents the difference with 1901');
 }
 
 function createLegend() {
@@ -66,14 +73,14 @@ function createLegend() {
     let dataRange = getDataRange();
 
     var colorScale = d3.scaleLinear()
-            .domain([dataRange[0], dataRange[1]])
+            .domain([-4,4])
             .range(["#ffffff", "#4682b4"])
             .interpolate(d3.interpolateHcl);
 
     //Extra scale since the color scale is interpolated
     let tempScale = d3.scaleLinear() // create a linear scale
-        .domain([dataRange[0], dataRange[1]])  // input uses min and max values
-        .range([0, 400]);
+        .domain([-4,4])  // input uses min and max values
+        .range([0, width]);
         
     //Calculate the variables for the temp gradient
     let numStops = 10;
@@ -119,7 +126,7 @@ function createLegend() {
     //Set scale for x-axis
     var xScale = d3.scaleLinear()
         .range([0, legendWidth])
-        .domain([-20, 30]);
+        .domain([-4, 4]);
 
     //Define x-axis
     var xAxis = d3.axisBottom(xScale)
@@ -136,7 +143,7 @@ function loadData() {
 
     // Datasets to load
     let dataPromises = [
-        d3.csv("./assets/data/minmax_avg_by_year.csv"), // and associated data in csv file
+        d3.csv("./assets/data/temp_year_1901.csv"), // and associated data in csv file
         d3.json("./assets/data/world-topo.json") // our geometries
     ]
 
