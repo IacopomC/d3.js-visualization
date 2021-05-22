@@ -53,7 +53,7 @@ function createTitle() {
         .attr("class", "title")
         .attr("x", 720)
         .attr("y", 50)
-        .text("Global Temperature Evolution 1901 - 2020");
+        .text("Rainfall Evolution by Country 1901 - 2020");
 }
 
 function createLegend() {
@@ -119,12 +119,12 @@ function createLegend() {
     //Set scale for x-axis
     var xScale = d3.scaleLinear()
         .range([0, legendWidth])
-        .domain([-20, 30]);
+        .domain([30, 110]);
 
     //Define x-axis
     var xAxis = d3.axisBottom(xScale)
         .ticks(5)
-        .tickFormat(function (d) { return d + "°C"; });
+        .tickFormat(function (d) { return d + " mm"; });
 
     //Set up X axis
     legendsvg.append("g")
@@ -136,7 +136,7 @@ function loadData() {
 
     // Datasets to load
     let dataPromises = [
-        d3.csv("./assets/data/minmax_avg_by_year.csv"), // and associated data in csv file
+        d3.csv("./assets/data/minmax_avg_rain_year.csv"), // and associated data in csv file
         d3.json("./assets/data/world-topo.json") // our geometries
     ]
 
@@ -178,12 +178,11 @@ function drawMap(world) {
         .attr("class", "country") // give them a class for styling and access later
         .attr("id", function (d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
         .attr("d", path); // create them using the svg path generator defined above
-
     var dataRange = getDataRange(); // get the min/max values from the current year's range of data values
     d3.selectAll('.country')  // select all the countries
         .attr('fill-opacity', function (d) {
             return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // give them an opacity value based on their current value
-        });  
+        });
 
 }
 
