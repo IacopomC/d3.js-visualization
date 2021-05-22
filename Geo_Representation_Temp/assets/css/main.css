@@ -1,0 +1,66 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+#wrapper {
+    width: 960px;
+    margin: -30px auto 0;
+}
+#map {
+    width: 960px;
+    height: 580px;
+    position: relative;
+}
+.stroke {
+  fill: none;
+  stroke: #888;
+  stroke-width: 2px;
+}
+
+.fill {
+  fill: #fff;
+}
+
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+
+.land {
+  fill: #222;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+.country {
+    fill: steelblue;
+    stroke: white;
+}
+#slider, #clock {
+  left: 60px;
+  position: fixed;
+}
+#clock {
+  left: 30px;
+  bottom: 28px;
+}
+
+.title {
+  font-size: 26px;  /*28px*/
+  fill: #110707; /*#4F4F4F;*/
+  font-weight: 300;
+  text-anchor: start;
+}
+
+.subtitle {
+  font-size: 14px;
+  fill: #080404;
+  font-weight: 300;
+  text-anchor: start;
+}
