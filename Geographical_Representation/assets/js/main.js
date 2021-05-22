@@ -10,7 +10,7 @@ function init() {
 
 function setMap() {
 
-    width = 960, height = 580;  // map width and height, matches 
+    width = 960, height = 600;  // map width and height, matches 
 
     projection = d3.geoEqualEarth()   // define our projection with parameters
         .translate([width / 2, height / 2])
@@ -39,8 +39,97 @@ function setMap() {
         .attr("class", "graticule")
         .attr("d", path);
 
-    loadData();  // let's load our data next
+    createTitle();
+    loadData();
+}
 
+function createTitle() {
+
+    var textWrapper = svg.append("g").attr("class", "textWrapper")
+        .attr("transform", "translate(" + -width / 2 + "," + 0 + ")");
+
+    //Append title to the top
+    textWrapper.append("text")
+        .attr("class", "title")
+        .attr("x", 720)
+        .attr("y", 50)
+        .text("Global Temperature Evolution 1901 - 2020");
+}
+
+function createLegend() {
+
+    ///////////////////////////////////////////////////////////////////////////
+    //////////////// Create the gradient for the legend ///////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    // get data range
+    let dataRange = getDataRange();
+
+    var colorScale = d3.scaleLinear()
+            .domain([dataRange[0], dataRange[1]])
+            .range(["#ffffff", "#4682b4"])
+            .interpolate(d3.interpolateHcl);
+
+    //Extra scale since the color scale is interpolated
+    let tempScale = d3.scaleLinear() // create a linear scale
+        .domain([dataRange[0], dataRange[1]])  // input uses min and max values
+        .range([0, 400]);
+        
+    //Calculate the variables for the temp gradient
+    let numStops = 10;
+    let tempRange = tempScale.domain();
+    tempRange[2] = tempRange[1] - tempRange[0];
+    let tempPoint = [];
+    for (var i = 0; i < numStops; i++) {
+        tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
+    }
+
+    //Create the gradient
+    svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "legend-weather")
+        .attr("x1", "0%").attr("y1", "0%")
+        .attr("x2", "100%").attr("y2", "0%")
+        .selectAll("stop")
+        .data(d3.range(numStops))
+        .enter().append("stop")
+        .attr("offset", function (d, i) { return tempScale(tempPoint[i]) / width; })
+        .attr("stop-color", function (d, i) { return colorScale(tempPoint[i]); });
+
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////// Draw the legend ////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    var legendWidth = 400;
+
+    //Color Legend container
+    var legendsvg = svg.append("g")
+        .attr("class", "legendWrapper")
+        .attr("transform", "translate(60,60)");
+
+    //Draw the Rectangle
+    legendsvg.append("rect")
+        .attr("x", 220)
+        .attr("y", 505)
+        .attr("rx", 8 / 2)
+        .attr("width", legendWidth)
+        .attr("height", 8)
+        .style("fill", "url(#legend-weather)");
+
+    //Set scale for x-axis
+    var xScale = d3.scaleLinear()
+        .range([0, legendWidth])
+        .domain([-20, 30]);
+
+    //Define x-axis
+    var xAxis = d3.axisBottom(xScale)
+        .ticks(5)
+        .tickFormat(function (d) { return d + "°C"; });
+
+    //Set up X axis
+    legendsvg.append("g")
+        .attr("transform", "translate(220,520)")
+        .call(xAxis);
 }
 
 function loadData() {
@@ -78,6 +167,7 @@ function processData(data) {
     }
     d3.select('#clock').html(attributeArray[currentAttribute]);  // populate the clock initially with the current year
     drawMap(data);  // let's mug the map now with our newly populated data object
+    createLegend();
 }
 
 function drawMap(world) {
@@ -93,7 +183,8 @@ function drawMap(world) {
     d3.selectAll('.country')  // select all the countries
         .attr('fill-opacity', function (d) {
             return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // give them an opacity value based on their current value
-        });
+        });  
+
 }
 
 function sequenceMap() {

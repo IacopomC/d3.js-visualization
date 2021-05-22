@@ -1,3 +1,8 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
 #wrapper {
     width: 960px;
     margin: -30px auto 0;
@@ -38,9 +43,24 @@
     stroke: white;
 }
 #slider, #clock {
-  position: absolute;
+  left: 60px;
+  position: fixed;
 }
 #clock {
   left: 30px;
   bottom: 28px;
+}
+
+.title {
+  font-size: 26px;  /*28px*/
+  fill: #110707; /*#4F4F4F;*/
+  font-weight: 300;
+  text-anchor: start;
+}
+
+.subtitle {
+  font-size: 14px;
+  fill: #080404;
+  font-weight: 300;
+  text-anchor: start;
 }
