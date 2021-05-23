@@ -179,13 +179,45 @@ function processData(data) {
 
 function drawMap(world) {
 
+    var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
     svg.selectAll(".country")   // select country objects (which don't exist yet)
         .data(topojson.feature(world[1], world[1].objects.countries).features)  // bind data to these non-existent objects
         .enter().append("path") // prepare data to be appended to paths
         .attr("class", "country") // give them a class for styling and access later
         .attr("id", function (d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
-        .attr("d", path); // create them using the svg path generator defined above
+        .attr("d", path) // create them using the svg path generator defined above
+        // tooltips
+        .on('mouseover',function(event,d){
 
+            var format = d3.format(".2f");
+
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div.html(
+                "<strong>Country: </strong><span class='details'>" + d.properties.admin + "<br></span>" + "<strong>Temperature: </strong><span class='details'>" + format(d.properties[attributeArray[currentAttribute]]) +"</span>"
+            )               
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+  
+            d3.select(this)
+              .style("opacity", 1)
+              .style("stroke-width",3);
+          })
+        .on('mouseout', function(d){
+
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+  
+            d3.select(this)
+              .style("opacity", 1)
+              .style("stroke-width",1);
+          });
+        
     var dataRange = getDataRange(); // get the min/max values from the current year's range of data values
     d3.selectAll('.country')  // select all the countries
         .attr('fill-opacity', function (d) {
@@ -228,7 +260,7 @@ function getDataRange() {
                 max = currentValue;
             }
         });
-    return [min, max];  //boomsauce
+    return [min, max];
 }
 
 function animateMap() {
