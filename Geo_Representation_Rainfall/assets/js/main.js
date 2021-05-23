@@ -54,13 +54,13 @@ function createTitle() {
         .attr("x", 720)
         .attr("y", 50)
         .text("Rainfall Evolution by Country 1901 - 2020");
-    
+
     //Subtitle:
     textWrapper.append("text")
-    .attr("class", "subtitle")
-    .attr("x", 800)
-    .attr("y", 70)
-    .text('Each year represents the difference with 1901');
+        .attr("class", "subtitle")
+        .attr("x", 800)
+        .attr("y", 70)
+        .text('Each year represents the difference with 1901');
 }
 
 function createLegend() {
@@ -73,15 +73,15 @@ function createLegend() {
     let dataRange = getDataRange();
 
     var colorScale = d3.scaleLinear()
-            .domain([-200, 200])
-            .range(["#ffffff", "#4682b4"])
-            .interpolate(d3.interpolateHcl);
+        .domain([-200, 200])
+        .range(["#ffffff", "#4682b4"])
+        .interpolate(d3.interpolateHcl);
 
     //Extra scale since the color scale is interpolated
     let tempScale = d3.scaleLinear() // create a linear scale
         .domain([-200, 200])  // input uses min and max values
         .range([0, width]);
-        
+
     //Calculate the variables for the temp gradient
     let numStops = 10;
     let tempRange = tempScale.domain();
@@ -179,12 +179,45 @@ function processData(data) {
 
 function drawMap(world) {
 
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
     svg.selectAll(".country")   // select country objects (which don't exist yet)
         .data(topojson.feature(world[1], world[1].objects.countries).features)  // bind data to these non-existent objects
         .enter().append("path") // prepare data to be appended to paths
         .attr("class", "country") // give them a class for styling and access later
         .attr("id", function (d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
-        .attr("d", path); // create them using the svg path generator defined above
+        .attr("d", path) // create them using the svg path generator defined above
+        // tooltips
+        .on('mouseover', function (event, d) {
+
+            var format = d3.format(".2f");
+
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div.html(
+                "<strong>Country: </strong><span class='details'>" + d.properties.admin + "<br></span>" + "<strong>Rainfall: </strong><span class='details'>" + format(d.properties[attributeArray[currentAttribute]]) + " mm</span>"
+            )
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+
+            d3.select(this)
+                .style("opacity", 1)
+                .style("stroke-width", 3);
+        })
+        .on('mouseout', function (d) {
+
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+
+            d3.select(this)
+                .style("opacity", 1)
+                .style("stroke-width", 1);
+        });
+
     var dataRange = getDataRange(); // get the min/max values from the current year's range of data values
     d3.selectAll('.country')  // select all the countries
         .attr('fill-opacity', function (d) {

@@ -64,3 +64,17 @@ body {
   font-weight: 300;
   text-anchor: start;
 }
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: max-content;
+  height: max-content;
+  padding: 2px;
+  font-size: 12px;
+  font-family:"avenir next", Arial, sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 4px;
+  pointer-events: none;
+}
