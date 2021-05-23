@@ -198,7 +198,7 @@ function drawMap(world) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(
-                "<strong>Country: </strong><span class='details'>" + d.properties.admin + "<br></span>" + "<strong>Temperature: </strong><span class='details'>" + format(d.properties[attributeArray[currentAttribute]]) +"</span>"
+                "<strong>Country: </strong><span class='details'>" + d.properties.admin + "<br></span>" + "<strong>Temperature: </strong><span class='details'>" + format(d.properties[attributeArray[currentAttribute]]) +" °C</span>"
             )               
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
